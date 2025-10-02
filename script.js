@@ -15,7 +15,9 @@ function addAgendaItem(type, title, desc, datetime) {
     agendaItems.push(newItem);
     renderAgenda();
     updateNotifications();
-showCalendarModal(newItem);
+    // langsung buat file kalender + reminder
+downloadICS(newItem);
+scheduleReminder(newItem);
 }
 
 // Render Agenda ke UI
@@ -314,5 +316,6 @@ END:VCALENDAR`;
         if (event.target === modal) modal.style.display = "none";
     };
 }
+
 
 
