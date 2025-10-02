@@ -156,19 +156,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Modal functionality
-    function showModal(agendaItem) {
-        modal.style.display = "block";
-        calendarLink.href = generateICS(agendaItem);
-    }
-    closeButton.addEventListener('click', () => {
-        modal.style.display = "none";
-    });
-    window.addEventListener('click', (event) => {
-        if (event.target === modal) {
-            modal.style.display = "none";
-        }
-    });
-
+function showModal(agendaItem) {
+    // langsung generate file ICS
+    const link = document.createElement("a");
+    link.href = generateICS(agendaItem);
+    link.download = `${agendaItem.title}.ics`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
     function generateICS(item) {
         const start = item.datetime.toISOString().replace(/-|:|\.\d+/g, "");
         const end = new Date(item.datetime.getTime() + 60 * 60 * 1000)
@@ -188,3 +184,4 @@ END:VCALENDAR`.trim();
         return "data:text/calendar;charset=utf-8," + encodeURIComponent(icsContent);
     }
 });
+
