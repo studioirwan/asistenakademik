@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Asisten Mahasiswa</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Kolom Kiri: Input dan Asisten -->
+    <div class="input-column">
+      <!-- Form Tambah Tugas -->
+      <div class="card">
+        <h2 class="card-title">Tambah Tugas Baru</h2>
+        <form id="task-form">
+          <div class="form-group">
+            <label for="task-course">Mata Kuliah</label>
+            <input type="text" id="task-course" required>
+          </div>
+          <div class="form-group">
+            <label for="task-desc">Deskripsi Singkat</label>
+            <textarea id="task-desc" rows="2" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="task-deadline">Deadline</label>
+            <input type="datetime-local" id="task-deadline" required>
+          </div>
+          <button type="submit">Tambah Tugas</button>
+        </form>
+      </div>
+
+      <!-- Form Tambah Ujian -->
+      <div class="card">
+        <h2 class="card-title">Tambah Jadwal Ujian</h2>
+        <form id="exam-form">
+          <div class="form-group">
+            <label for="exam-course">Mata Kuliah</label>
+            <input type="text" id="exam-course" required>
+          </div>
+          <div class="form-group">
+            <label for="exam-type">Jenis Ujian</label>
+            <select id="exam-type" required>
+              <option value="UTS">UTS</option>
+              <option value="UAS">UAS</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="exam-date">Tanggal & Jam</label>
+            <input type="datetime-local" id="exam-date" required>
+          </div>
+          <button type="submit">Tambah Jadwal</button>
+        </form>
+      </div>
+
+      <!-- Asisten AI -->
+      <div class="card">
+        <h2 class="card-title">Tanya Asisten</h2>
+        <div class="form-group">
+          <input type="text" id="assistant-query" placeholder="Contoh: Deadline terdekat apa?">
+        </div>
+        <button id="ask-assistant-btn">Tanya</button>
+        <div id="assistant-response">Jawaban asisten akan muncul di sini...</div>
+      </div>
+    </div>
+    
+    <!-- Kolom Kanan: Tampilan Notifikasi dan Agenda -->
+    <div class="display-column">
+      <!-- Notifikasi -->
+      <div class="card">
+        <h2 class="card-title">Pengingat Hari Ini & Besok</h2>
+        <div id="notification-area">
+          <p>Tidak ada pengingat untuk saat ini.</p>
+        </div>
+      </div>
+      
+      <!-- Agenda -->
+      <div class="card">
+        <h2 class="card-title">Agenda Kamu</h2>
+        <ul id="agenda-list">
+          <!-- Item agenda akan ditambahkan oleh JavaScript -->
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>
