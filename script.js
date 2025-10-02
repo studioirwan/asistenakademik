@@ -8,7 +8,99 @@ function isSameDay(date1, date2) {
            date1.getFullYear() === date2.getFullYear();
 }
 
-// ================== BANK PERTANYAAN ==================
+// ================== GENERATE ICS (DENGAN PENGINGAT H-1 JAM 19:00) ==================
+function generateICS(item) {
+    const start = new Date(item.datetime);
+    const end = new Date(start.getTime() + 60 * 60 * 1000); // default durasi 1 jam
+
+    const pad = n => (n < 10 ? '0' + n : n);
+
+    const formatDate = d =>
+        d.getUTCFullYear().toString() +
+        pad(d.getUTCMonth() + 1) +
+        pad(d.getUTCDate()) + 'T' +
+        pad(d.getUTCHours()) +
+        pad(d.getUTCMinutes()) +
+        pad(d.getUTCSeconds()) + 'Z';
+
+    // 🔹 Alarm H-1 jam 19:00
+    const reminder = new Date(start);
+    reminder.setDate(reminder.getDate() - 1);
+    reminder.setHours(19, 0, 0, 0);
+
+    const icsContent =
+`BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+SUMMARY:${item.title}
+DESCRIPTION:${item.desc}
+DTSTART:${formatDate(start)}
+DTEND:${formatDate(end)}
+BEGIN:VALARM
+TRIGGER;VALUE=DATE-TIME:${formatDate(reminder)}
+ACTION:DISPLAY
+DESCRIPTION:Pengingat ${item.title}
+END:VALARM
+END:VEVENT
+END:VCALENDAR`;
+
+    return 'data:text/calendar;charset=utf-8,' + encodeURIComponent(icsContent);
+}
+
+// ================== AGENDA ==================
+function addAgendaItem(type, title, desc, datetime) {
+    const newItem = { type, title, desc, datetime: new Date(datetime) };
+    agendaItems.push(newItem);
+    renderAgenda();
+    showModal(newItem); // langsung download ICS
+}
+
+function renderAgenda() {
+    const list = document.getElementById('agenda-list');
+    list.innerHTML = '';
+    agendaItems.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = `${item.title} - ${item.datetime.toLocaleString()} (${item.type})`;
+        list.appendChild(li);
+    });
+}
+
+// Download ICS otomatis
+function showModal(agendaItem) {
+    const link = document.createElement("a");
+    link.href = generateICS(agendaItem);
+    link.download = `${agendaItem.title}.ics`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// ================== FORM HANDLING ==================
+document.getElementById('task-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const course = document.getElementById('task-course').value;
+    const desc = document.getElementById('task-desc').value;
+    const deadline = document.getElementById('task-deadline').value;
+    addAgendaItem('task', `Tugas ${course}`, desc, deadline);
+});
+
+document.getElementById('exam-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const course = document.getElementById('exam-course').value;
+    const desc = document.getElementById('exam-desc').value;
+    const examDate = document.getElementById('exam-date').value;
+    addAgendaItem('exam', `Ujian ${course}`, desc, examDate);
+});
+
+document.getElementById('agenda-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const title = document.getElementById('agenda-title').value;
+    const desc = document.getElementById('agenda-desc').value;
+    const date = document.getElementById('agenda-date').value;
+    addAgendaItem('agenda', title, desc, date);
+});
+
+// ================== BANK PERTANYAAN JAWABAN ==================
 const qaBank = [
     // Sapaan dasar
     { q: ["halo", "hai", "hello"], a: "Halo! Ada yang bisa saya bantu?" },
@@ -67,7 +159,7 @@ const qaBank = [
     { q: ["bye", "dadah"], a: "Dadah! Sampai jumpa 👋" },
 ];
 
-// Tambahan otomatis untuk variasi pertanyaan umum (supaya total >100)
+// Tambahan otomatis supaya total >100
 const extraGreetings = [
     "assalamualaikum", "waalaikumsalam", "hi", "yo", "bro", "sis", "selamat datang",
     "bagaimana harimu", "lagi sibuk apa", "ngapain", "ada kabar", "apa yang baru",
@@ -83,11 +175,9 @@ extraGreetings.forEach(greet => {
     qaBank.push({ q: [greet], a: "Oke, saya catat ya. Mau saya tampilkan daftar tugas/ujian/agenda?" });
 });
 
-// Total sekarang = 100+ entri
-
 // ================== ASISTEN HANDLER ==================
-assistantBtn.addEventListener('click', () => {
-    const query = assistantQuery.value.toLowerCase().trim();
+document.getElementById('assistant-btn').addEventListener('click', () => {
+    const query = document.getElementById('assistant-query').value.toLowerCase().trim();
     let response = null;
 
     for (let item of qaBank) {
@@ -105,6 +195,7 @@ assistantBtn.addEventListener('click', () => {
         response = "Maaf, saya belum paham pertanyaan itu. Coba tanya soal tugas, ujian, atau agenda ya.";
     }
 
+    const assistantResponse = document.getElementById('assistant-response');
     assistantResponse.textContent = response;
     assistantResponse.style.backgroundColor = "#e6f7ff";
 });
