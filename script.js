@@ -15,6 +15,11 @@ function addAgendaItem(type, title, desc, datetime) {
     agendaItems.push(newItem);
     renderAgenda();
     updateNotifications();
+    function saveAgenda() {
+    // ubah array agendaItems menjadi string JSON
+    localStorage.setItem("agendaItems", JSON.stringify(agendaItems));
+}
+    saveAgenda(); // simpan ke localStorage
     // langsung buat file kalender + reminder
 downloadICS(newItem);
 scheduleReminder(newItem);
@@ -317,5 +322,21 @@ END:VCALENDAR`;
     };
 }
 
+// =======================
+// LocalStorage: Load Data Saat Buka Web
+// =======================
+function loadAgenda() {
+    const data = localStorage.getItem("agendaItems");
+    if (data) {
+        agendaItems = JSON.parse(data);
+        agendaItems = agendaItems.map(item => ({
+            ...item,
+            datetime: new Date(item.datetime)
+        }));
+        renderAgenda();
+        updateNotifications();
+    }
+}
 
-
+// jalankan otomatis
+loadAgenda();
