@@ -69,4 +69,62 @@ document.addEventListener('DOMContentLoaded', () => {
         agendas.push(newAgenda);
         saveData();
         renderAll();
-        agendaForm.r
+        agendaForm.reset();
+        showCalendarModal(newAgenda);
+    });
+    
+    askAssistantBtn.addEventListener('click', handleAssistantQuery);
+    assistantQueryInput.addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') handleAssistantQuery();
+    });
+    
+    closeModalBtn.addEventListener('click', () => modal.style.display = 'none');
+    window.addEventListener('click', (e) => {
+        if(e.target == modal) modal.style.display = 'none';
+    });
+
+    // --- Rendering Functions ---
+    const renderAgenda = () => {
+        agendaList.innerHTML = '';
+        const allItems = [...tasks, ...exams, ...agendas];
+
+        allItems.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        if (allItems.length === 0) {
+            agendaList.innerHTML = '<li>Tidak ada agenda yang tersimpan.</li>';
+            return;
+        }
+        
+        allItems.forEach(item => {
+            const li = document.createElement('li');
+            li.className = `agenda-item ${item.type}`;
+            
+            const itemDate = new Date(item.date);
+            const formattedDate = itemDate.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' });
+            const formattedTime = itemDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+            let content = '';
+            if (item.type === 'task') {
+                content = `<div class="agenda-icon">📝</div><div class="agenda-details"><h4>Tugas: ${item.course}</h4><p>${item.description}</p></div><div class="agenda-time"><strong>Deadline</strong><p>${formattedDate}</p><p>${formattedTime}</p></div>`;
+            } else if (item.type === 'exam') {
+                content = `<div class="agenda-icon">📘</div><div class="agenda-details"><h4>${item.examType} ${item.course}</h4></div><div class="agenda-time"><strong>Jadwal</strong><p>${formattedDate}</p><p>${formattedTime}</p></div>`;
+            } else { // agenda
+                content = `<div class="agenda-icon">📅</div><div class="agenda-details"><h4>${item.title}</h4><p>${item.description}</p></div><div class="agenda-time"><strong>Jadwal</strong><p>${formattedDate}</p><p>${formattedTime}</p></div>`;
+            }
+            li.innerHTML = content;
+            agendaList.appendChild(li);
+        });
+    };
+    
+    const renderNotifications = () => {
+        notificationArea.innerHTML = '';
+        const allItems = [...tasks, ...exams, ...agendas];
+        
+        const now = new Date();
+        const todayStart = new Date(new Date().setHours(0, 0, 0, 0));
+        const todayEnd = new Date(new Date().setHours(23, 59, 59, 999));
+
+        const tomorrow = new Date();
+        tomorrow.setDate(now.getDate() + 1);
+        const tomorrowStart = new Date(new Date(tomorrow).setHours(0, 0, 0, 0));
+        const tomorrowEnd =
