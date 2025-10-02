@@ -15,7 +15,7 @@ function addAgendaItem(type, title, desc, datetime) {
     agendaItems.push(newItem);
     renderAgenda();
     updateNotifications();
-// showCalendarModal(newItem);
+showCalendarModal(newItem);
 }
 
 // Render Agenda ke UI
@@ -314,4 +314,5 @@ END:VCALENDAR`;
         if (event.target === modal) modal.style.display = "none";
     };
 }
+
 
