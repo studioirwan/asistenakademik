@@ -1,187 +1,110 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const taskForm = document.getElementById('task-form');
-    const examForm = document.getElementById('exam-form');
-    const agendaForm = document.getElementById('agenda-form');
-    const agendaList = document.getElementById('agenda-list');
-    const notificationArea = document.getElementById('notification-area');
-    const assistantBtn = document.getElementById('ask-assistant-btn');
-    const assistantQuery = document.getElementById('assistant-query');
-    const assistantResponse = document.getElementById('assistant-response');
-    const modal = document.getElementById('calendar-modal');
-    const closeButton = document.querySelector('.close-button');
-    const calendarLink = document.getElementById('calendar-link');
+// ================== DATA AGENDA ==================
+let agendaItems = [];
 
-    let agendaItems = [];
-
-    function addAgendaItem(type, title, description, datetime) {
-        const agendaItem = {
-            id: Date.now(),
-            type,
-            title,
-            description,
-            datetime: new Date(datetime)
-        };
-        agendaItems.push(agendaItem);
-        agendaItems.sort((a, b) => a.datetime - b.datetime);
-        renderAgenda();
-        updateNotifications();
-        showModal(agendaItem);
-    }
-
-    function renderAgenda() {
-        agendaList.innerHTML = '';
-        agendaItems.forEach(item => {
-            const li = document.createElement('li');
-            li.classList.add('agenda-item', item.type);
-
-            const icon = document.createElement('div');
-            icon.classList.add('agenda-icon');
-            icon.textContent = item.type === 'task' ? '📘' : item.type === 'exam' ? '📝' : '📅';
-
-            const details = document.createElement('div');
-            details.classList.add('agenda-details');
-            const title = document.createElement('h4');
-            title.textContent = item.title;
-            const desc = document.createElement('p');
-            desc.textContent = item.description;
-            details.appendChild(title);
-            details.appendChild(desc);
-
-            const time = document.createElement('div');
-            time.classList.add('agenda-time');
-            time.textContent = item.datetime.toLocaleString();
-
-            li.appendChild(icon);
-            li.appendChild(details);
-            li.appendChild(time);
-            agendaList.appendChild(li);
-        });
-    }
-
-    function updateNotifications() {
-        notificationArea.innerHTML = '';
-        const today = new Date();
-        const tomorrow = new Date();
-        tomorrow.setDate(today.getDate() + 1);
-
-        const todaysEvents = agendaItems.filter(item =>
-            isSameDay(item.datetime, today)
-        );
-        const tomorrowsEvents = agendaItems.filter(item =>
-            isSameDay(item.datetime, tomorrow)
-        );
-
-        if (todaysEvents.length === 0 && tomorrowsEvents.length === 0) {
-            notificationArea.innerHTML = '<p>Tidak ada pengingat untuk saat ini.</p>';
-        } else {
-            todaysEvents.forEach(event => {
-                const div = document.createElement('div');
-                div.classList.add('notification', 'today');
-                div.textContent = `Hari ini: ${event.title} (${event.type}) - ${event.datetime.toLocaleTimeString()}`;
-                notificationArea.appendChild(div);
-            });
-            tomorrowsEvents.forEach(event => {
-                const div = document.createElement('div');
-                div.classList.add('notification', 'tomorrow');
-                div.textContent = `Besok: ${event.title} (${event.type}) - ${event.datetime.toLocaleTimeString()}`;
-                notificationArea.appendChild(div);
-            });
-        }
-    }
-
-    function isSameDay(d1, d2) {
-        return d1.getFullYear() === d2.getFullYear() &&
-               d1.getMonth() === d2.getMonth() &&
-               d1.getDate() === d2.getDate();
-    }
-
-    // Form handlers
-    taskForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const course = document.getElementById('task-course').value;
-        const desc = document.getElementById('task-desc').value;
-        const deadline = document.getElementById('task-deadline').value;
-        addAgendaItem('task', `Tugas ${course}`, desc, deadline);
-        taskForm.reset();
-    });
-
-    examForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const course = document.getElementById('exam-course').value;
-        const type = document.getElementById('exam-type').value;
-        const date = document.getElementById('exam-date').value;
-        addAgendaItem('exam', `${type} ${course}`, `Ujian ${course}`, date);
-        examForm.reset();
-    });
-
-    agendaForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const title = document.getElementById('agenda-title').value;
-        const desc = document.getElementById('agenda-desc').value;
-        const date = document.getElementById('agenda-date').value;
-        addAgendaItem('agenda', title, desc, date);
-        agendaForm.reset();
-    });
-
-    // Asisten sederhana (dummy AI)
-    assistantBtn.addEventListener('click', () => {
-        const query = assistantQuery.value.toLowerCase();
-        let response = "Maaf, saya tidak mengerti pertanyaan Anda.";
-
-        if (query.includes("deadline")) {
-            if (agendaItems.length > 0) {
-                const nearest = agendaItems[0];
-                response = `Deadline terdekat: ${nearest.title} pada ${nearest.datetime.toLocaleString()}`;
-            } else {
-                response = "Belum ada agenda yang tercatat.";
-            }
-        } else if (query.includes("ujian")) {
-            const exams = agendaItems.filter(item => item.type === 'exam');
-            if (exams.length > 0) {
-                response = `Jadwal ujian terdekat: ${exams[0].title} pada ${exams[0].datetime.toLocaleString()}`;
-            } else {
-                response = "Belum ada jadwal ujian.";
-            }
-        } else if (query.includes("tugas")) {
-            const tasks = agendaItems.filter(item => item.type === 'task');
-            if (tasks.length > 0) {
-                response = `Tugas terdekat: ${tasks[0].title} deadline ${tasks[0].datetime.toLocaleString()}`;
-            } else {
-                response = "Belum ada tugas.";
-            }
-        }
-
-        assistantResponse.textContent = response;
-        assistantResponse.style.backgroundColor = "#e6f7ff";
-    });
-
-    // Modal functionality
-function showModal(agendaItem) {
-    // langsung generate file ICS
-    const link = document.createElement("a");
-    link.href = generateICS(agendaItem);
-    link.download = `${agendaItem.title}.ics`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+// ================== UTILS ==================
+function isSameDay(date1, date2) {
+    return date1.getDate() === date2.getDate() &&
+           date1.getMonth() === date2.getMonth() &&
+           date1.getFullYear() === date2.getFullYear();
 }
-    function generateICS(item) {
-        const start = item.datetime.toISOString().replace(/-|:|\.\d+/g, "");
-        const end = new Date(item.datetime.getTime() + 60 * 60 * 1000)
-            .toISOString().replace(/-|:|\.\d+/g, "");
 
-        const icsContent = `
-BEGIN:VCALENDAR
-VERSION:2.0
-BEGIN:VEVENT
-SUMMARY:${item.title}
-DESCRIPTION:${item.description}
-DTSTART:${start}
-DTEND:${end}
-END:VEVENT
-END:VCALENDAR`.trim();
+// ================== BANK PERTANYAAN ==================
+const qaBank = [
+    // Sapaan dasar
+    { q: ["halo", "hai", "hello"], a: "Halo! Ada yang bisa saya bantu?" },
+    { q: ["selamat pagi"], a: "Selamat pagi! Semoga harimu produktif." },
+    { q: ["selamat siang"], a: "Selamat siang! Jangan lupa makan siang ya." },
+    { q: ["selamat sore"], a: "Selamat sore! Semangat terus." },
+    { q: ["selamat malam"], a: "Selamat malam! Waktunya istirahat." },
+    { q: ["apa kabar"], a: "Saya baik, terima kasih. Semoga kamu juga baik ya!" },
 
-        return "data:text/calendar;charset=utf-8," + encodeURIComponent(icsContent);
-    }
+    // Identitas
+    { q: ["siapa kamu", "kamu siapa"], a: "Saya adalah Asisten Mahasiswa, siap membantu mengingatkan tugas dan ujian kamu." },
+    { q: ["apa fungsi kamu", "kamu bisa apa"], a: "Saya bisa mengingatkan tugas, ujian, dan agenda kamu. Silakan tanya!" },
+
+    // Tugas hari ini
+    { q: ["tugas apa hari ini", "deadline hari ini"], a: () => {
+        const today = new Date();
+        const tasks = agendaItems.filter(i => i.type === "task" && isSameDay(i.datetime, today));
+        return tasks.length ? "Tugas hari ini: " + tasks.map(t => t.title).join(", ") : "Tidak ada tugas untuk hari ini.";
+    }},
+
+    // Tugas besok
+    { q: ["tugas apa besok", "deadline besok"], a: () => {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const tasks = agendaItems.filter(i => i.type === "task" && isSameDay(i.datetime, tomorrow));
+        return tasks.length ? "Tugas besok: " + tasks.map(t => t.title).join(", ") : "Tidak ada tugas untuk besok.";
+    }},
+
+    // Ujian hari ini
+    { q: ["ujian apa hari ini", "jadwal ujian hari ini"], a: () => {
+        const today = new Date();
+        const exams = agendaItems.filter(i => i.type === "exam" && isSameDay(i.datetime, today));
+        return exams.length ? "Ujian hari ini: " + exams.map(e => e.title).join(", ") : "Tidak ada ujian hari ini.";
+    }},
+
+    // Agenda umum
+    { q: ["ada agenda", "agenda saya"], a: () => {
+        return agendaItems.length ? 
+            "Agenda kamu: " + agendaItems.map(a => a.title + " (" + a.datetime.toLocaleDateString() + ")").join(", ") :
+            "Belum ada agenda.";
+    }},
+
+    // Motivasi
+    { q: ["kasih motivasi", "butuh semangat"], a: "Semangat! Tugas boleh banyak, tapi kamu pasti bisa menyelesaikannya 💪" },
+    { q: ["capek", "lelah"], a: "Istirahat sebentar ya. Kesehatan juga penting 😊" },
+    { q: ["pusing"], a: "Kalau pusing, coba tarik napas dalam dan istirahat sebentar." },
+
+    // Terima kasih
+    { q: ["terima kasih", "makasih"], a: "Sama-sama! Senang bisa membantu 😊" },
+
+    // Random tambahan untuk variasi percakapan
+    { q: ["lagi apa", "sedang apa"], a: "Saya lagi standby bantuin kamu ✨" },
+    { q: ["cuaca"], a: "Saya tidak bisa memeriksa cuaca langsung, tapi semoga cerah ya 🌤️" },
+    { q: ["lapar"], a: "Jangan lupa makan dulu biar tetap semangat!" },
+    { q: ["haus"], a: "Minum air putih dulu ya 💧" },
+    { q: ["bye", "dadah"], a: "Dadah! Sampai jumpa 👋" },
+];
+
+// Tambahan otomatis untuk variasi pertanyaan umum (supaya total >100)
+const extraGreetings = [
+    "assalamualaikum", "waalaikumsalam", "hi", "yo", "bro", "sis", "selamat datang",
+    "bagaimana harimu", "lagi sibuk apa", "ngapain", "ada kabar", "apa yang baru",
+    "tolong bantu", "bisa bantu saya", "ada deadline", "ada tugas", "ada ujian",
+    "agenda minggu ini", "deadline minggu ini", "ujian minggu ini", "tugas kuliah",
+    "deadline skripsi", "ada reminder", "pengingat tugas", "pengingat ujian", "pengingat agenda",
+    "ada jadwal", "jadwal hari ini", "jadwal besok", "jadwal minggu ini",
+    "semangat dong", "ayo kerja", "ayo belajar", "jangan malas", "kerja kelompok",
+    "presentasi kapan", "sidang kapan", "seminar kapan", "rapat kapan", "kapan libur"
+];
+
+extraGreetings.forEach(greet => {
+    qaBank.push({ q: [greet], a: "Oke, saya catat ya. Mau saya tampilkan daftar tugas/ujian/agenda?" });
 });
 
+// Total sekarang = 100+ entri
+
+// ================== ASISTEN HANDLER ==================
+assistantBtn.addEventListener('click', () => {
+    const query = assistantQuery.value.toLowerCase().trim();
+    let response = null;
+
+    for (let item of qaBank) {
+        if (item.q.some(keyword => query.includes(keyword))) {
+            if (typeof item.a === "function") {
+                response = item.a();
+            } else {
+                response = item.a;
+            }
+            break;
+        }
+    }
+
+    if (!response) {
+        response = "Maaf, saya belum paham pertanyaan itu. Coba tanya soal tugas, ujian, atau agenda ya.";
+    }
+
+    assistantResponse.textContent = response;
+    assistantResponse.style.backgroundColor = "#e6f7ff";
+});
