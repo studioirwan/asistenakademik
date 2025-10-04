@@ -1,114 +1,148 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asisten Mahasiswa</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Asisten Mahasiswa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="container">
+    <!-- Kolom Kiri -->
+    <div class="input-column">
+      <!-- Form Tambah Tugas -->
+      <div class="card">
+        <h2 class="card-title">Tambah Tugas Baru</h2>
+        <form id="task-form">
+          <div class="form-group">
+            <label for="task-course">Mata Kuliah</label>
+            <input type="text" id="task-course" name="task-course" required>
+          </div>
+          <div class="form-group">
+            <label for="task-desc">Deskripsi Tugas</label>
+            <textarea id="task-desc" name="task-desc" rows="2"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="task-deadline">Deadline</label>
+            <input type="datetime-local" id="task-deadline" name="task-deadline" required>
+          </div>
+          <button type="submit">Tambah Tugas</button>
+        </form>
+      </div>
 
-    <div class="container">
-        <!-- Kolom Kiri: Input dan Asisten -->
-        <div class="input-column">
-            <!-- Form Tambah Tugas -->
-            <div class="card">
-                <h2 class="card-title">Tambah Tugas Baru</h2>
-                <form id="task-form">
-                    <div class="form-group">
-                        <label for="task-course">Mata Kuliah</label>
-                        <input type="text" id="task-course" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="task-desc">Deskripsi Tugas</label>
-                        <textarea id="task-desc" rows="2" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="task-deadline">Deadline</label>
-                        <input type="datetime-local" id="task-deadline" required>
-                    </div>
-                    <button type="submit">Tambah Tugas</button>
-                </form>
-            </div>
+      <!-- Form Tambah Ujian -->
+      <div class="card">
+        <h2 class="card-title">Tambah Jadwal Ujian</h2>
+        <form id="exam-form">
+          <div class="form-group">
+            <label for="exam-course">Mata Kuliah</label>
+            <input type="text" id="exam-course" name="exam-course" required>
+          </div>
+          <div class="form-group">
+            <label for="exam-type">Jenis Ujian</label>
+            <select id="exam-type" name="exam-type" required>
+              <option value="UTS">UTS</option>
+              <option value="UAS">UAS</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="exam-date">Tanggal & Jam</label>
+            <input type="datetime-local" id="exam-date" name="exam-date" required>
+          </div>
+          <button type="submit">Tambah Jadwal</button>
+        </form>
+      </div>
 
-            <!-- Form Tambah Ujian -->
-            <div class="card">
-                <h2 class="card-title">Tambah Jadwal Ujian</h2>
-                <form id="exam-form">
-                    <div class="form-group">
-                        <label for="exam-course">Mata Kuliah</label>
-                        <input type="text" id="exam-course" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="exam-type">Jenis Ujian</label>
-                        <select id="exam-type" required>
-                            <option value="UTS">UTS</option>
-                            <option value="UAS">UAS</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="exam-date">Tanggal & Jam</label>
-                        <input type="datetime-local" id="exam-date" required>
-                    </div>
-                    <button type="submit">Tambah Jadwal</button>
-                </form>
-            </div>
-            
-            <!-- Form Tambah Agenda -->
-            <div class="card">
-                <h2 class="card-title">Tambah Agenda Baru</h2>
-                <form id="agenda-form">
-                    <div class="form-group">
-                        <label for="agenda-title">Nama Agenda</label>
-                        <input type="text" id="agenda-title" required>
-                    </div>
-                     <div class="form-group">
-                        <label for="agenda-desc">Deskripsi (Opsional)</label>
-                        <textarea id="agenda-desc" rows="2"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="agenda-date">Tanggal & Jam</label>
-                        <input type="datetime-local" id="agenda-date" required>
-                    </div>
-                    <button type="submit">Tambah Agenda</button>
-                </form>
-            </div>
-            
-            <!-- Asisten AI -->
-            <div class="card">
-                <h2 class="card-title">Tanya Asisten</h2>
-                <div class="form-group">
-                    <input type="text" id="assistant-query" placeholder="Contoh: Deadline terdekat apa?">
-                </div>
-                <button id="ask-assistant-btn">Tanya</button>
-                <div id="assistant-response">Jawaban asisten akan muncul di sini...</div>
-            </div>
+      <!-- Form Tambah Agenda -->
+      <div class="card">
+        <h2 class="card-title">Tambah Agenda Baru</h2>
+        <form id="agenda-form">
+          <div class="form-group">
+            <label for="agenda-title">Nama Agenda</label>
+            <input type="text" id="agenda-title" name="agenda-title" required>
+          </div>
+          <div class="form-group">
+            <label for="agenda-desc">Deskripsi (Opsional)</label>
+            <textarea id="agenda-desc" name="agenda-desc" rows="2"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="agenda-date">Tanggal & Jam</label>
+            <input type="datetime-local" id="agenda-date" name="agenda-date" required>
+          </div>
+          <button type="submit">Tambah Agenda</button>
+        </form>
+      </div>
+
+      <!-- Asisten AI -->
+      <div class="card">
+        <h2 class="card-title">Tanya Asisten</h2>
+        <div class="form-group">
+          <input type="text" id="assistant-query" name="assistant-query" placeholder="Contoh: Ada tugas apa hari ini?">
         </div>
-        
-        <!-- Kolom Kanan: Tampilan Notifikasi dan Agenda -->
-        <div class="display-column">
-             <!-- Notifikasi -->
-            <div class="card">
-                <h2 class="card-title">Pengingat Hari Ini & Besok</h2>
-                <div id="notification-area">
-                    <p>Tidak ada pengingat untuk saat ini.</p>
-                </div>
-            </div>
-            
-            <!-- Agenda -->
-            <div class="card">
-                <h2 class="card-title">Agenda Kamu</h2>
-                <ul id="agenda-list">
-                    <!-- Item agenda akan ditambahkan oleh JavaScript -->
-                </ul>
-            </div>
-        </div>
+        <button id="ask-assistant-btn">Tanya</button>
+        <div id="assistant-response">Jawaban asisten akan muncul di sini...</div>
+      </div>
     </div>
-    
-    <script src="script.js"></script>
+
+    <!-- Kolom Kanan -->
+    <div class="display-column">
+      <!-- Notifikasi -->
+      <div class="card">
+        <h2 class="card-title">Pengingat Hari Ini & Besok</h2>
+        <div id="notification-area">
+          <p>Tidak ada pengingat untuk saat ini.</p>
+        </div>
+      </div>
+
+      <!-- Agenda -->
+      <div class="card">
+        <h2 class="card-title">Agenda Kamu</h2>
+        <ul id="agenda-list"></ul>
+      </div>
+
+      <!-- Ringkasan -->
+      <div class="card">
+        <h2 class="card-title">Ringkasan Kegiatanmu</h2>
+        <div class="summary-grid">
+          <div class="summary-item"><span>📝</span><p id="task-count">0 Tugas</p></div>
+          <div class="summary-item"><span>⚠️</span><p id="unfinished-task-count">0 Belum selesai</p></div>
+          <div class="summary-item"><span>⏰</span><p id="upcoming-task-count">0 Deadline dekat</p></div>
+          <div class="summary-item"><span>📚</span><p id="exam-count">0 Ujian</p></div>
+          <div class="summary-item"><span>📅</span><p id="agenda-count">0 Agenda</p></div>
+        </div>
+      </div>
+
+      <!-- Kalender -->
+      <div class="card">
+        <h2 class="card-title">Kalender</h2>
+        <div class="calendar-container">
+          <div class="calendar-header">
+            <button id="prev-month" class="nav-btn">❮</button>
+            <div id="calendar-title" class="calendar-title">
+              <span class="calendar-month">Oktober</span> <span class="calendar-year">2025</span>
+            </div>
+            <button id="next-month" class="nav-btn">❯</button>
+          </div>
+          <div class="calendar-wrapper">
+            <div class="calendar-grid-header">
+              <span>Minggu</span>
+              <span>Senin</span>
+              <span>Selasa</span>
+              <span>Rabu</span>
+              <span>Kamis</span>
+              <span>Jumat</span>
+              <span>Sabtu</span>
+            </div>
+            <div id="calendar-grid" class="calendar-grid"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
-
